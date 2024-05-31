@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+>
+<head th:replace="~{client/fragments/head :: heads(pageTitle='User Page')}"></head>
+<body>
+
+<div th:replace="~{client/fragments/header.html :: header}"></div>
+<!-- Single Page Header start -->
+<div class="container-fluid page-header py-5">
+    <h1 class="text-center text-white display-6">User Infomation</h1>
+</div>
+<!-- Single Page Header End -->
+<!-- Contact Start -->
+<div class="container-fluid contact py-5">
+    <div class="container py-5">
+        <div class="row d-flex justify-content-around">
+            <div class="col-lg-3 col-12 card m-3 p-3">
+                <div class="d-flex flex-lg-column ">
+                    <div class="d-lg-flex d-none justify-content-center">
+                        <div class="avatar avatar-xl me-2">
+                            <th:block th:if="${userInfo.avatar != null}">
+                                <img th:src="@{'/' + ${userInfo.avatar}}" alt class="h-auto rounded-circle"
+                                     width="40px"/>
+                            </th:block>
+                            <th:block th:unless="${userInfo.avatar != null}">
+                               <span class="avatar-initial rounded-circle bg-label-success">
+                                       <span class="avatar-name"></span>
+                               </span>
+                            </th:block>
+                        </div>
+                    </div>
+                    <div class="d-lg-flex d-none justify-content-center">
+                        <h3 class="text-center" th:text="${userInfo.fullName}"></h3>
+                    </div>
+                    <div class="d-lg-flex d-none justify-content-center">
+                        <h5 class="text-center text-lowercase" th:text="${userInfo.role}"></h5>
+                    </div>
+                    <div class="container">
+                        <div th:if="${userInfo.role== 'ADMIN'}" class="d-flex justify-content-center py-3">
+                            <a th:href="@{/admin}" class="btn btn-outline-primary w-75">
+                                <i class="fas fa-user-shield mx-1"></i>Admin CP</a>
+                        </div>
+                        <ul class="nav flex-lg-column flex-row justify-content-center align-content-center">
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/users}"><i class="fas fa-user mx-1"></i> Cập nhật
+                                    tài khoản</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/users/orders}"><i class="fas fa-history mx-1"></i> Lịch
+                                    sử đặt hàng</a>
+                            </li>
+                        </ul>
+                        <form th:action="@{/logout}" method="post" class="d-none d-lg-flex pt-5 justify-content-center">
+                            <button type="submit" class="btn btn-danger w-75">
+                                <i class="fas fa-sign-out-alt mx-1"></i> Logout
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8 col-12 card m-3 p-3">
+                <div class="card">
+                    <h5 class="card-header">Chi tiết đơn hàng: #[[${order.getId()}]]</h5>
+                    <th:block th:if="${order.canCancel()}">
+                        <span class="card-header">Bạn được phép huỷ đơn trước: <span
+                                th:text="${#temporals.format(order.getCreatedAt().plusMinutes(3), 'dd-MM-yyyy HH:mm')}"></span></span>
+                        <br>
+                        <form th:action="@{/order/cancel}" method="POST" class="ps-4">
+                            <input type="hidden" name="orderId" th:value="${order.getId()}">
+                            <button type="submit" class="btn btn-danger">Huỷ đơn hàng</button>
+                        </form>
+                    </th:block>
+                    <div class="card-content">
+                        <!--Hiển thị thông tin khách hàng-->
+                        <div class="ps-4">
+                            <strong>Trạng thái đơn hàng:</strong>
+                            <span th:if="${order.getStatus().toString().equalsIgnoreCase('PROCESSING')}"
+                                  class="badge bg-label-warning me-2 ms-2">Đang xử lý </span>
+                            <span th:if="${order.getStatus().toString().equalsIgnoreCase('WAITING')}"
+                                  class="badge bg-label-warning me-2 ms-2">Đợi thanh toán</span>
+                            <span th:if="${order.getStatus().toString().equalsIgnoreCase('SHIPPING')}"
+                                  class="badge bg-label-success me-2 ms-2">Đang giao</span>
+                            <span th:if="${order.getStatus().toString().equalsIgnoreCase('DELIVERED')}"
+                                  class="badge bg-label-info me-2 ms-2">Đã giao</span>
+                            <span th:if="${order.getStatus().toString().equalsIgnoreCase('CANCEL')}"
+                                  class="badge bg-label-danger me-2 ms-2">Đã huỷ</span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="ps-4">
+                            <strong>Thông tin khách hàng:</strong>
+                            <div><span class="text-muted">Người đặt hàng:</span> <span class="fw-semibold"
+                                                                                       th:text="${order.getUser().getFullName()}"></span>
+                            </div>
+                            <div><span class="text-muted">Địa chỉ giao hàng:</span> <span class="fw-semibold"
+                                                                                          th:text="${order.getDeliveryAddress()}"></span>
+                            </div>
+                            <div th:if="${order.getUser().getPhone()}"><span class="text-muted">Số điện thoại:</span>
+                                <span class="fw-semibold" th:text="${order.getUser().getPhone()}"></span></div>
+
+                            <div th:if="${!order.getOrderNote().isEmpty()}">
+                                <span class="text-muted">Khách hàng ghi chú:</span>
+                                <span class="fw-semibold" th:text="${order.getOrderNote()}"></span>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped mb-0">
+                                    <thead>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Tên sản phẩm</th>
+                                        <th>Số lượng</th>
+                                        <th>Giá</th>
+                                        <th>Thành tiền</th>
+                                        <th>Rating</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="orderDetail, iStat : ${order.getOrderItems()}">
+                                        <td th:text="${iStat.count}"></td>
+                                        <td>
+                                            <!--                                            food Id-->
+                                            <a th:href="@{/food/{slug}(slug=${orderDetail.getFood().getSlug()})}">
+                                                <img th:src="@{'/' + ${orderDetail.getFood().getImage()}}"
+                                                     alt="food image" width="30px" height="30px">
+                                                <span class="fw-bold"
+                                                      th:text="${orderDetail.getFood().getFoodName()}"></span>
+                                            </a>
+                                        </td>
+                                        <td th:text="${orderDetail.getQuantity()}"></td>
+                                        <td th:text="${orderDetail.getUnitPrice()}"></td>
+                                        <td th:text="${orderDetail.getQuantity() * orderDetail.getUnitPrice()}"></td>
+                                        <td>
+                                            <th:block th:if="${!orderDetail.ratingFood && !order.getStatus().toString().equalsIgnoreCase('cancel')}">
+                                                <!--  food id-->
+                                                <!--  add rating- form-->
+                                                <div th:replace="~{client/ratingFood/rating_form :: ratingForm(foodId= ${orderDetail.getId()})}"></div>
+
+                                            </th:block>
+                                            <th:block th:unless="${!orderDetail.ratingFood}">
+                                                <a class="btn btn-primary">Da Rating</a>
+                                            </th:block>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div class="m-3 mb-2 p-1">
+                                    <div class="row">
+                                        <div class="col-12 col-lg-8 d-flex flex-column">
+
+                                            <th:block th:if="${order.couponDto}">
+                                                <div class="alert alert-success d-flex justify-content-between"
+                                                     role="alert">
+                                                    <div class="d-flex">
+                                                        <span
+                                                                class="badge badge-center rounded-pill bg-warning p-3 me-2">
+                                                        <i class="fas fa-percent"></i>
+                                                    </span>
+                                                        <div class="d-flex flex-column ps-1">
+                                                            <h6 class="alert-heading d-flex align-items-center mb-1">
+                                                                Mã giảm giá: [[${order.couponDto.getCouponCode()}]]</h6>
+                                                            <span th:if="${order.couponDto.getTypeCoupon().toString().equalsIgnoreCase('PERCENT')}">
+                                                            Giảm [[${order.couponDto.getCouponValue()}]]% trên tổng giá trị đơn hàng.
+                                                            </span>
+                                                            </span>
+                                                            <span th:if="${order.couponDto.getTypeCoupon().toString().equalsIgnoreCase('DIRECT')}">
+                                                            Giảm [[${order.couponDto.getCouponValue()}]]đ trên tổng giá trị đơn hàng.
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </th:block>
+                                        </div>
+                                        <div class="order-calculations col-12 col-lg-4">
+                                            <div th:if="${order.couponDto}" class="d-flex justify-content-between mb-2">
+                                                <span class="w-px-100">Tạm tính:</span>
+                                                <span class="text-heading"
+                                                      th:text="${order.getTotalBill()+order.couponDto.getOrderDiscount()}"></span>
+                                            </div>
+                                            <div th:if="${order.couponDto}" class="d-flex justify-content-between mb-2">
+                                                <span class="w-px-100">Giảm giá:</span>
+                                                <span class="text-heading mb-0"
+                                                      th:text="${order.couponDto.getOrderDiscount()}"></span>
+                                            </div>
+                                            <div class="d-flex justify-content-between">
+                                                <h6 class="w-px-100 mb-0">Tổng:</h6>
+                                                <h6 class="mb-0" th:text="${order.getTotalBill()}"></h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Contact End -->
+<div th:replace="client/fragments/footer::footer"></div>
+<div th:replace="client/fragments/js::js-insert"></div>
+</body>
+
+</html>
+

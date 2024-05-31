@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head th:replace="~{client/fragments/head :: heads(pageTitle='Restaurant name?')}">
+    <title></title>
+</head>
+<body>
+
+<div th:replace="~{client/fragments/header :: header}"></div>
+
+<div class="d-lg-block d-none my-3 py-5">
+
+</div>
+
+<!-- List Restaurant Start -->
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <div class="row gy-4 d-flex align-items-stretch">
+            <!-- Sử dụng Thymeleaf để truy cập thông tin từ đối tượng Restaurant -->
+            <div class="col-lg-5 d-flex">
+                <div class="restaurant-img-box position-relative border p-2 d-flex flex-column justify-content-between">
+                    <!-- Sử dụng Thymeleaf để đặt đường dẫn hình ảnh của nhà hàng -->
+                    <img th:src="@{'/' + ${restaurant.getImage()} }" alt="restaurant name" class="res-img w-100 scaleX-n1-rtl">
+                </div>
+            </div>
+            <div class="col-lg-7 d-flex">
+                <div class="card w-100">
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <!-- Sử dụng Thymeleaf để hiển thị tên nhà hàng -->
+                        <h4 class="my-2 py-2" th:text="${restaurant.getRestaurantName()}">Tên Restaurant</h4>
+                        <!-- Sử dụng Thymeleaf để hiển thị địa chỉ -->
+                        <p th:text="'Địa chỉ: ' + ${restaurant.getAddress()}">Địa chỉ: xxx</p>
+                        <div class="d-flex align-items-center">
+                            <div th:insert="~{client/fragments/elements/rating :: rating(rating_value = ${ratingValue})}"></div>
+
+                            <span class="badge bg-warning" th:text="${countRating}"></span>
+                        </div>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalScrollable">
+                            Xem Rating
+                        </button>
+                        <div th:insert="~{client/fragments/rating_list :: list(listValue = ${ratingList})}"></div>
+                        <!-- Sử dụng Thymeleaf để hiển thị giờ mở cửa và đóng cửa -->
+                        <p th:text="'Giờ mở cửa: ' + ${restaurant.getOpenTime()} + ' Giờ đóng cửa: ' + ${restaurant.getCloseTime()}">Giờ mở cửa: xxx Giờ đóng cửa: xxx</p>
+<!--                        &lt;!&ndash; Sử dụng Thymeleaf để hiển thị mức giá &ndash;&gt;-->
+<!--                        <p th:text="'Mức giá: ' + ${restaurant.get().priceRangeMin} + ' - ' + ${restaurant.get().priceRangeMax}">Mức giá: xxx - xxx</p>-->
+                        <!-- Sử dụng Thymeleaf để hiển thị mô tả nhà hàng -->
+                        <p class="my-3 content-res" th:text="${restaurant.getDescription()}">
+                            If you would like to discuss anything related to payment, account, licensing,
+                            partnerships, or have pre-sales questions, you’re at the right place.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <!-- Kết thúc Thymeleaf iteration -->
+        </div>
+    </div>
+</div>
+
+<!-- List Restaurant End -->
+
+<!-- Blog Start -->
+<!-- Blog End -->
+
+<!-- Footer Start -->
+
+<div th:replace="~{client/fragments/footer::footer}"></div>
+<div th:replace="~{client/fragments/js::js-insert}"></div>
+</body>
+</html>
