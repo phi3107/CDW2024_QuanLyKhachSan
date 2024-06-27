@@ -40,7 +40,7 @@ public class SecurityConfig {
 
                                 .anyRequest().permitAll()
                 )
-                .formLogin(formLogin -> formLogin
+                .formLogin(formLogin -> formLogin9
                         .loginPage("/login")
                         .usernameParameter("email")
                         .passwordParameter("password")

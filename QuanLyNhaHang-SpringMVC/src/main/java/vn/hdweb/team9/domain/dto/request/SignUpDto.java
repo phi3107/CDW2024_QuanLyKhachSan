@@ -9,7 +9,8 @@ import lombok.Data;
 public class SignUpDto {
 
     @NotEmpty(message = "Vui lòng nhập email")
-    @Email(message = "Vui lòng nhập đúng định dạng email")
+//    @Email(message = "Vui lòng nhập đúng định dạng email")
+    @Pattern(regexp = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$", message = "Vui lòng nhập đúng định dạng email.")
     private String email;
     @NotEmpty(message = "Vui lòng nhập mật khẩu")
     @Pattern(regexp = "^(?=.*[@$!%*#?&])(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d@$!%*#?&]{8,}$", message = "Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt")
